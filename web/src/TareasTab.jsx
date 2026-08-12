@@ -460,9 +460,13 @@ export default function TareasTab() {
 
     if (
       !confirm(
-        `¿Iniciar el año ${nuevoAnio}?\n\n` +
-          `Se generarán ${activas.length} tareas con el mismo cronograma del año ${anioActual} ` +
-          `(fechas del año ${nuevoAnio}, estado "pendiente") y el historial de ${anioActual} quedará archivado.\n\n¿Continuar?`
+        `🔁 Iniciar el año ${nuevoAnio}\n\n` +
+          `Esto es lo que va a pasar:\n\n` +
+          `1. Se generará el cronograma completo de ${nuevoAnio} (copia de ${anioActual} con fechas actualizadas, todo en "pendiente").\n` +
+          `2. Se archivarán las tareas de enero–noviembre de ${anioActual} (quedan ocultas).\n` +
+          `3. Diciembre de ${anioActual} quedará visible para descargarlo en enero.\n` +
+          `4. En febrero se borrarán automáticamente todas las tareas de ${anioActual}.\n\n` +
+          `¿Continuar?`
       )
     ) {
       return;
@@ -488,11 +492,13 @@ export default function TareasTab() {
       const { error: eIns } = await supabase.from("tareas").insert(nuevas);
       if (eIns) throw new Error("No se pudieron generar las tareas: " + eIns.message);
 
-      const ids = activas.map((t) => t.id);
+      const idsArchivar = activas
+        .filter((t) => String(t.fecha).slice(5, 7) !== "12")
+        .map((t) => t.id);
       const { error: eArch } = await supabase
         .from("tareas")
         .update({ archivada: true })
-        .in("id", ids);
+        .in("id", idsArchivar);
       if (eArch)
         throw new Error(
           "Las tareas se generaron, pero no se pudo archivar el historial: " + eArch.message
@@ -502,7 +508,7 @@ export default function TareasTab() {
       if (primerDia) setFecha(primerDia);
 
       setMensaje(
-        `✅ Año ${nuevoAnio} iniciado: ${nuevas.length} tareas generadas. El historial de ${anioActual} quedó archivado.`
+        `✅ Año ${nuevoAnio} iniciado: ${nuevas.length} tareas generadas. Se archivó ${anioActual} (enero–noviembre) y diciembre quedó visible para descargarlo en enero.`
       );
       cargar();
     } catch (e) {

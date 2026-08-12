@@ -50,6 +50,23 @@ export default function App() {
     };
   }, []);
 
+  useEffect(() => {
+    if (!sesion) return;
+    (async () => {
+      try {
+        const hoy = new Date();
+        if (hoy.getMonth() < 1) return; // solo a partir de febrero
+        const anio = hoy.getFullYear();
+        const { count, error } = await supabase
+          .from("tareas")
+          .select("id", { count: "exact", head: true })
+          .gte("fecha", `${anio}-01-01`);
+        if (error || !count) return; // el año actual aún no se generó
+        await supabase.from("tareas").delete().lt("fecha", `${anio}-01-01`);
+      } catch (e) {}
+    })();
+  }, [sesion]);
+
   if (cargando) {
     return <div className="centro-pantalla">Cargando...</div>;
   }

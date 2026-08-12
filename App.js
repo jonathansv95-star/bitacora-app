@@ -11,6 +11,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { supabase } from "./lib/supabase";
 import { limpiarFotosViejas } from "./lib/limpieza";
+import { contarPendientes, limpiarAnioAnterior } from "./lib/tareas";
 import { colores, radio, espacio, tipografia } from "./lib/tema";
 
 import LoginScreen from "./screens/LoginScreen";
@@ -108,6 +109,15 @@ export default function App() {
   const [sesion, setSesion] = useState(null);
   const [estado, setEstado] = useState("cargando");
   const [intentos, setIntentos] = useState(0);
+  const [pendientes, setPendientes] = useState(0);
+
+  async function actualizarPendientes() {
+    try {
+      setPendientes(await contarPendientes());
+    } catch {
+      setPendientes(0);
+    }
+  }
 
   useEffect(() => {
     let vigente = true;
@@ -144,6 +154,13 @@ export default function App() {
       listener.subscription.unsubscribe();
     };
   }, [intentos]);
+
+  useEffect(() => {
+    if (sesion) {
+      actualizarPendientes();
+      limpiarAnioAnterior().catch(() => {});
+    }
+  }, [sesion]);
 
   function reintentar() {
     setEstado("cargando");
@@ -203,13 +220,16 @@ export default function App() {
               title: "Bitácoras",
               tabBarIcon: ({ color, size }) => <IconoTab emoji="📋" color={color} size={size} />,
             }}
+            listeners={{ focus: actualizarPendientes }}
           />
           <Tab.Screen
             name="TareasTab"
             component={StackTareas}
             options={{
               title: "Tareas",
-              tabBarIcon: ({ color, size }) => <IconoTab emoji="🔧" color={color} size={size} />,
+              tabBarIcon: ({ color, size }) => <IconoTab emoji="👷" color={color} size={size} />,
+              tabBarBadge: pendientes > 0 ? pendientes : undefined,
+              tabBarBadgeStyle: { backgroundColor: colores.peligro, color: "#fff" },
             }}
           />
         </Tab.Navigator>

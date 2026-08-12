@@ -60,14 +60,8 @@ export default function TareaDetalleScreen({ route }) {
     })();
   }, [tarea.id]);
 
-  function alternarPaso(numero, idx) {
-    setHechos((prev) => {
-      const actual = prev[numero] || [];
-      const nuevo = actual.includes(idx)
-        ? actual.filter((i) => i !== idx)
-        : [...actual, idx];
-      return { ...prev, [numero]: nuevo };
-    });
+  function alternarProcedimiento(numero) {
+    setHechos((prev) => ({ ...prev, [numero]: !prev[numero] }));
   }
 
   async function guardar() {
@@ -263,26 +257,41 @@ export default function TareaDetalleScreen({ route }) {
             {p.pasos && p.pasos.length > 0 ? (
               <View style={styles.bloque}>
                 <Text style={styles.bloqueTitulo}>Pasos a seguir</Text>
-                {p.pasos.map((paso, idx) => {
-                  const marcado = (hechos[p.numero] || []).includes(idx);
-                  return (
-                    <TouchableOpacity
-                      key={idx}
-                      style={styles.paso}
-                      onPress={() => alternarPaso(p.numero, idx)}
+                {p.pasos.map((paso, idx) => (
+                  <View key={idx} style={styles.paso}>
+                    <Text
+                      style={[
+                        styles.pasoNumero,
+                        hechos[p.numero] && styles.pasoTextoHecho,
+                      ]}
                     >
-                      <View style={[styles.check, marcado && styles.checkActivo]}>
-                        {marcado ? <Text style={styles.checkTexto}>✓</Text> : null}
-                      </View>
-                      <Text style={[styles.pasoTexto, marcado && styles.pasoTextoHecho]}>
-                        {paso}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })}
-                <Text style={styles.pasoAyuda}>
-                  Toca cada paso para marcarlo como hecho.
-                </Text>
+                      {idx + 1}.
+                    </Text>
+                    <Text
+                      style={[styles.pasoTexto, hechos[p.numero] && styles.pasoTextoHecho]}
+                    >
+                      {paso}
+                    </Text>
+                  </View>
+                ))}
+                <TouchableOpacity
+                  style={[
+                    styles.botonValidar,
+                    hechos[p.numero] && styles.botonValidarActivo,
+                  ]}
+                  onPress={() => alternarProcedimiento(p.numero)}
+                >
+                  <Text
+                    style={[
+                      styles.botonValidarTexto,
+                      hechos[p.numero] && styles.botonValidarTextoActivo,
+                    ]}
+                  >
+                    {hechos[p.numero]
+                      ? "✓ Todos los pasos validados"
+                      : "Validar todos los pasos"}
+                  </Text>
+                </TouchableOpacity>
               </View>
             ) : null}
 
@@ -378,23 +387,27 @@ const styles = StyleSheet.create({
   bloqueTitulo: { fontSize: tipografia.chica, fontWeight: tipografia.pesoNegrita, color: colores.texto, marginBottom: 6 },
   bloqueTexto: { color: colores.texto, fontSize: tipografia.chica, lineHeight: 19 },
   paso: { flexDirection: "row", alignItems: "flex-start", marginBottom: 8 },
-  check: {
-    width: 22,
-    height: 22,
-    borderRadius: 6,
-    borderWidth: 2,
-    borderColor: colores.bordeFuerte,
-    marginRight: 10,
-    marginTop: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: colores.superficie,
+  pasoNumero: {
+    color: colores.textoTenue,
+    fontSize: tipografia.chica,
+    lineHeight: 19,
+    marginRight: 6,
+    fontWeight: tipografia.pesoMedia,
   },
-  checkActivo: { backgroundColor: colores.exito, borderColor: colores.exito },
-  checkTexto: { color: "#fff", fontSize: 13, fontWeight: tipografia.pesoNegrita },
   pasoTexto: { flex: 1, color: colores.texto, fontSize: tipografia.chica, lineHeight: 19 },
   pasoTextoHecho: { color: colores.textoTenue, textDecorationLine: "line-through" },
-  pasoAyuda: { marginTop: 2, color: colores.textoTenue, fontSize: tipografia.miniatura, fontStyle: "italic" },
+  botonValidar: {
+    marginTop: 12,
+    borderWidth: 1,
+    borderColor: colores.bordeFuerte,
+    borderRadius: radio.md,
+    paddingVertical: 12,
+    alignItems: "center",
+    backgroundColor: colores.superficie,
+  },
+  botonValidarActivo: { backgroundColor: colores.exitoClaro, borderColor: colores.exito },
+  botonValidarTexto: { color: colores.texto, fontWeight: tipografia.pesoMedia, fontSize: tipografia.chica },
+  botonValidarTextoActivo: { color: colores.exito },
   categoriaEquipo: { color: colores.primario, fontSize: tipografia.chica, fontWeight: tipografia.pesoMedia, marginBottom: 3 },
   equipoItem: { color: colores.textoSuave, fontSize: tipografia.chica, marginBottom: 3 },
 });
