@@ -1,0 +1,46 @@
+{
+  "expo": {
+    "name": "Bitacoras Independencia",
+    "slug": "bitacora-app",
+    "version": "1.1.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.jonathan_sv95.bitacoraapp"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "package": "com.jonathan_sv95.bitacoraapp"
+    },
+    "web": {
+      "bundler": "metro"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "303bcb59-c0f1-415c-b23a-0edf7dea3ec4"
+      }
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "La app necesita acceso a tus fotos para adjuntar evidencia a las bitácoras.",
+          "cameraPermission": "La app necesita la cámara para tomar fotos de los eventos registrados."
+        }
+      ]
+    ]
+  }
+}

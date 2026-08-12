@@ -1,0 +1,25 @@
+# dependencias
+node_modules/
+
+# expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# nativo
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# supabase (archivos temporales del CLI)
+supabase/.temp/
+
+# varios
+npm-debug.*
+yarn-error.*
+.DS_Store
+Thumbs.db
