@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -42,6 +42,16 @@ export default function ListaScreen({ navigation }) {
       cargarEventos();
     }, [])
   );
+
+  useEffect(() => {
+    const canal = supabase
+      .channel("eventos-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "eventos" }, () =>
+        cargarEventos()
+      )
+      .subscribe();
+    return () => supabase.removeChannel(canal);
+  }, []);
 
   async function onRefresh() {
     setRefrescando(true);

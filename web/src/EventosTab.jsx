@@ -50,6 +50,14 @@ export default function EventosTab() {
     cargar();
   }, []);
 
+  useEffect(() => {
+    const canal = supabase
+      .channel("eventos-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "eventos" }, () => cargar())
+      .subscribe();
+    return () => supabase.removeChannel(canal);
+  }, []);
+
   const filtrados = useMemo(() => {
     const texto = busqueda.trim().toLowerCase();
     return eventos.filter((ev) => {

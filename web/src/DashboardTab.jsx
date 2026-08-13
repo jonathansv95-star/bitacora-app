@@ -60,6 +60,14 @@ export default function DashboardTab({ onIr }) {
     cargar();
   }, []);
 
+  useEffect(() => {
+    const canal = supabase
+      .channel("tareas-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tareas" }, () => cargar())
+      .subscribe();
+    return () => supabase.removeChannel(canal);
+  }, []);
+
   const hoy = hoyISO();
 
   async function marcarHecha(tarea) {

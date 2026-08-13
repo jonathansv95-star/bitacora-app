@@ -273,7 +273,7 @@ export default function ExcelTab() {
 
   return (
     <div className="tarjeta excel-tarjeta">
-      <h2>📊 Descargar Excel del mes</h2>
+      <h2>📊 Bitácoras mensuales</h2>
       <p className="ayuda">
         Genera un reporte con una pestaña por día, como la plantilla de la planta.
         Los eventos con fotos llevan enlaces para verlas.

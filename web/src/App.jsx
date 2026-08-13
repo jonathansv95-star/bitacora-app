@@ -5,19 +5,23 @@ import DashboardTab from "./DashboardTab.jsx";
 import TareasTab from "./TareasTab.jsx";
 import EventosTab from "./EventosTab.jsx";
 import ExcelTab from "./ExcelTab.jsx";
+import ManualesTab from "./ManualesTab.jsx";
+import UsuariosTab from "./UsuariosTab.jsx";
 
 const PESTANAS = [
   { id: "inicio", nombre: "Tablero", icono: "☀️" },
   { id: "tareas", nombre: "Tareas del día", icono: "🔧" },
+  { id: "manuales", nombre: "Manuales", icono: "📖" },
   { id: "eventos", nombre: "Eventos", icono: "⚡" },
-  { id: "excel", nombre: "Excel mensual", icono: "📄" },
+  { id: "excel", nombre: "Bitácoras mensuales", icono: "📄" },
+  { id: "usuarios", nombre: "Usuarios", icono: "👥" },
 ];
 
 export default function App() {
   const [sesion, setSesion] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [pestana, setPestana] = useState("inicio");
-  const [tema, setTema] = useState(() => localStorage.getItem("bitacora_tema") || "claro");
+  const [tema, setTema] = useState(() => localStorage.getItem("bitacora_tema") || "oscuro");
 
   useEffect(() => {
     document.documentElement.dataset.tema = tema;
@@ -63,6 +67,27 @@ export default function App() {
           .gte("fecha", `${anio}-01-01`);
         if (error || !count) return; // el año actual aún no se generó
         await supabase.from("tareas").delete().lt("fecha", `${anio}-01-01`);
+      } catch (e) {}
+    })();
+  }, [sesion]);
+
+  useEffect(() => {
+    if (!sesion) return;
+    (async () => {
+      try {
+        const hoy = new Date();
+        const limite = new Date(hoy.getFullYear(), hoy.getMonth() - 3, hoy.getDate());
+        const fechaLimite = `${limite.getFullYear()}-${String(limite.getMonth() + 1).padStart(2, "0")}-${String(limite.getDate()).padStart(2, "0")}`;
+        const { data: eventos } = await supabase
+          .from("eventos")
+          .select("id, fotos")
+          .lt("fecha", fechaLimite);
+        for (const ev of eventos || []) {
+          if ((ev.fotos || []).length > 0) {
+            await supabase.storage.from("fotos-eventos").remove(ev.fotos);
+          }
+          await supabase.from("eventos").delete().eq("id", ev.id);
+        }
       } catch (e) {}
     })();
   }, [sesion]);
@@ -119,8 +144,10 @@ export default function App() {
         <div className="contenido-entrada" key={pestana}>
           {pestana === "inicio" && <DashboardTab onIr={setPestana} />}
           {pestana === "tareas" && <TareasTab />}
+          {pestana === "manuales" && <ManualesTab />}
           {pestana === "eventos" && <EventosTab />}
           {pestana === "excel" && <ExcelTab />}
+          {pestana === "usuarios" && <UsuariosTab />}
         </div>
       </main>
 

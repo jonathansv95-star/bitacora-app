@@ -10,7 +10,7 @@ import { NavigationContainer, DefaultTheme } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { supabase } from "./lib/supabase";
-import { limpiarFotosViejas } from "./lib/limpieza";
+import { limpiarBitacorasViejas } from "./lib/limpieza";
 import { contarPendientes, limpiarAnioAnterior } from "./lib/tareas";
 import { colores, radio, espacio, tipografia } from "./lib/tema";
 
@@ -133,7 +133,7 @@ export default function App() {
         clearTimeout(tope);
         setSesion(session);
         setEstado("listo");
-        if (session) limpiarFotosViejas();
+        if (session) limpiarBitacorasViejas();
       })
       .catch(() => {
         if (!vigente) return;
@@ -145,7 +145,7 @@ export default function App() {
       if (!vigente) return;
       setSesion(session);
       setEstado("listo");
-      if (session) limpiarFotosViejas();
+      if (session) limpiarBitacorasViejas();
     });
 
     return () => {

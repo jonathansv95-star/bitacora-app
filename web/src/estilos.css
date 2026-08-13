@@ -937,6 +937,36 @@ button {
   color: var(--texto-suave);
 }
 
+/* ---------- Manuales (revisión de mapeo) ---------- */
+.manual-lista {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border-top: 1px dashed var(--borde);
+  padding-top: 10px;
+}
+
+.proc-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--texto-suave);
+  flex-wrap: wrap;
+}
+
+.proc-mini-titulo {
+  line-height: 1.4;
+}
+
+.chip-manual {
+  color: var(--primario);
+  border-color: var(--primario);
+  background: var(--primario-suave);
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 /* ---------- Tabla ---------- */
 .tabla-envoltorio {
   background: var(--superficie);
@@ -1979,4 +2009,108 @@ button {
 
   .lightbox-nav.izquierda { left: 8px; }
   .lightbox-nav.derecha { right: 8px; }
+}
+
+/* ============================================================
+   TEMA FUTURISTA · NEÓN + CRISTAL (modo oscuro)
+   ============================================================ */
+
+[data-tema="oscuro"] {
+  --primario-grad: linear-gradient(135deg, #2563eb 0%, #06b6d4 100%);
+  --primario-grad-suave: linear-gradient(135deg, #2563eb 0%, #06b6d4 50%, #10b981 100%);
+  --primario-glow: rgba(34, 211, 238, 0.45);
+  --neon: #22d3ee;
+  --esmeralda: #34d399;
+}
+
+/* Fondo tecnológico con retícula y halos de energía */
+[data-tema="oscuro"] body {
+  background-color: #060a12;
+  background-image:
+    radial-gradient(900px 500px at 15% -10%, rgba(34, 211, 238, 0.14), transparent 60%),
+    radial-gradient(800px 500px at 100% 0%, rgba(16, 185, 129, 0.12), transparent 55%),
+    radial-gradient(1100px 700px at 50% 130%, rgba(37, 99, 235, 0.16), transparent 60%),
+    linear-gradient(rgba(34, 211, 238, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(34, 211, 238, 0.045) 1px, transparent 1px);
+  background-size: auto, auto, auto, 42px 42px, 42px 42px;
+  background-attachment: fixed;
+}
+
+/* Barra superior cristal */
+[data-tema="oscuro"] .barra {
+  background: rgba(6, 10, 18, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(34, 211, 238, 0.22);
+}
+
+/* Cristal (glassmorphism) en tarjetas */
+[data-tema="oscuro"] .tarjeta,
+[data-tema="oscuro"] .tarea,
+[data-tema="oscuro"] .kpi,
+[data-tema="oscuro"] .navegador-dia,
+[data-tema="oscuro"] .tarjeta-filtros,
+[data-tema="oscuro"] .tarjeta-grafica,
+[data-tema="oscuro"] .lista-mini li,
+[data-tema="oscuro"] .panel-edicion,
+[data-tema="oscuro"] .tabla-envoltorio,
+[data-tema="oscuro"] .login-tarjeta {
+  background: rgba(18, 26, 43, 0.55);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(34, 211, 238, 0.16);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+}
+
+/* Glow neón al pasar el mouse */
+[data-tema="oscuro"] .tarjeta:hover,
+[data-tema="oscuro"] .tarea:hover,
+[data-tema="oscuro"] .kpi:hover,
+[data-tema="oscuro"] .tarjeta-grafica:hover {
+  border-color: rgba(34, 211, 238, 0.5);
+  box-shadow: 0 0 24px rgba(34, 211, 238, 0.4), 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+
+/* Botón principal con gradiente neón animado */
+[data-tema="oscuro"] .btn-primario {
+  background: linear-gradient(135deg, #2563eb, #06b6d4, #10b981, #2563eb);
+  background-size: 300% 300%;
+  animation: neon-mover 7s ease infinite;
+  box-shadow: 0 0 20px rgba(34, 211, 238, 0.45);
+}
+
+@keyframes neon-mover {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Pestaña activa con neón */
+[data-tema="oscuro"] .pestanas button.activa {
+  background: linear-gradient(135deg, #2563eb, #06b6d4);
+  box-shadow: 0 0 18px rgba(34, 211, 238, 0.5);
+}
+
+/* Título con degradado de energía */
+[data-tema="oscuro"] .titulo-barra h1 {
+  background-image: linear-gradient(90deg, #60a5fa, #22d3ee, #34d399);
+}
+
+/* Logo con halo */
+[data-tema="oscuro"] .logo-caja {
+  box-shadow: 0 0 22px rgba(34, 211, 238, 0.5);
+}
+
+/* Iconos KPI */
+[data-tema="oscuro"] .kpi-icono {
+  background: rgba(34, 211, 238, 0.1);
+  border-color: rgba(34, 211, 238, 0.3);
+}
+
+/* Chips de hora y manual */
+[data-tema="oscuro"] .chip-hora,
+[data-tema="oscuro"] .chip-manual {
+  color: #22d3ee;
+  border-color: rgba(34, 211, 238, 0.5);
+  background: rgba(34, 211, 238, 0.1);
 }

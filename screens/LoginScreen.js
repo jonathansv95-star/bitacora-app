@@ -19,7 +19,6 @@ export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [modoRegistro, setModoRegistro] = useState(false);
 
   async function handleAuth() {
     if (!email.trim() || !password) {
@@ -27,15 +26,11 @@ export default function LoginScreen() {
       return;
     }
     setLoading(true);
-    const { error } = modoRegistro
-      ? await supabase.auth.signUp({ email: email.trim(), password })
-      : await supabase.auth.signInWithPassword({ email: email.trim(), password });
+    const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
     setLoading(false);
 
     if (error) {
       Alert.alert("Error", error.message);
-    } else if (modoRegistro) {
-      Alert.alert("Listo", "Cuenta creada. Revisa tu correo si se requiere confirmación.");
     }
   }
 
@@ -84,18 +79,8 @@ export default function LoginScreen() {
             {loading ? (
               <ActivityIndicator color="#fff" />
             ) : (
-              <Text style={styles.botonTexto}>
-                {modoRegistro ? "Crear cuenta" : "Iniciar sesión"}
-              </Text>
+              <Text style={styles.botonTexto}>Iniciar sesión</Text>
             )}
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => setModoRegistro(!modoRegistro)}>
-            <Text style={styles.link}>
-              {modoRegistro
-                ? "¿Ya tienes cuenta? Inicia sesión"
-                : "¿No tienes cuenta? Regístrate"}
-            </Text>
           </TouchableOpacity>
 
           <Text style={styles.credito}>Creado por Jonathan Guzmán</Text>

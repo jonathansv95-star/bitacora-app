@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   View,
   Text,
@@ -16,6 +16,8 @@ import {
   estaHecha,
   nombreDeTarea,
   formatoFecha,
+  suscribirTareas,
+  cancelarSuscripcion,
 } from "../lib/tareas";
 
 const CHIPS = [
@@ -48,6 +50,11 @@ export default function TareasScreen({ navigation }) {
       cargarTodo();
     }, [])
   );
+
+  useEffect(() => {
+    const canal = suscribirTareas(() => cargarTodo());
+    return () => cancelarSuscripcion(canal);
+  }, []);
 
   async function onRefresh() {
     setRefrescando(true);

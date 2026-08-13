@@ -4,7 +4,6 @@ import { supabase } from "./supabase";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [modoRegistro, setModoRegistro] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -16,15 +15,11 @@ export default function Login() {
     }
     setCargando(true);
     setMensaje("");
-    const { error } = modoRegistro
-      ? await supabase.auth.signUp({ email, password })
-      : await supabase.auth.signInWithPassword({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     setCargando(false);
 
     if (error) {
       setMensaje(error.message);
-    } else if (modoRegistro) {
-      setMensaje("Cuenta creada. Revisa tu correo si se requiere confirmación.");
     }
   }
 
@@ -52,19 +47,9 @@ export default function Login() {
           autoComplete="current-password"
         />
         <button className="btn-primario" type="submit" disabled={cargando}>
-          {cargando ? "Entrando..." : modoRegistro ? "Crear cuenta" : "Iniciar sesión"}
+          {cargando ? "Entrando..." : "Iniciar sesión"}
         </button>
         {mensaje && <p className="aviso">{mensaje}</p>}
-        <button
-          type="button"
-          className="enlace"
-          onClick={() => {
-            setModoRegistro(!modoRegistro);
-            setMensaje("");
-          }}
-        >
-          {modoRegistro ? "¿Ya tienes cuenta? Inicia sesión" : "¿No tienes cuenta? Regístrate"}
-        </button>
         <p className="login-pie">Acceso restringido al equipo de operación y mantenimiento.</p>
       </form>
     </div>

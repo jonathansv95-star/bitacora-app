@@ -179,6 +179,21 @@ export default function TareasTab() {
     cargar();
   }, [fecha]);
 
+  const cargarRef = useRef(cargar);
+  useEffect(() => {
+    cargarRef.current = cargar;
+  });
+
+  useEffect(() => {
+    const canal = supabase
+      .channel("tareas-realtime")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tareas" }, () =>
+        cargarRef.current()
+      )
+      .subscribe();
+    return () => supabase.removeChannel(canal);
+  }, []);
+
   const ordenadas = useMemo(() => {
     const estado = { pendiente: 0, en_progreso: 1, hecha: 2 };
     return [...tareas].sort((a, b) => estado[a.estado] - estado[b.estado]);
@@ -394,6 +409,31 @@ export default function TareasTab() {
           });
         }
         mensajeFormato = `Lista simple detectada (hoja "${hoja.nombre}")`;
+      }
+
+      // Fusiona tareas repetidas del mismo día (ej. 3 técnicos -> 1 con horario completo)
+      const mapa = new Map();
+      for (const n of nuevas) {
+        const clave = `${n.fecha}|${normalizar(n.descripcion)}`;
+        if (mapa.has(clave)) {
+          mapa.get(clave).duplicada = true;
+          continue;
+        }
+        mapa.set(clave, { ...n, duplicada: false });
+      }
+      nuevas = [];
+      for (const item of mapa.values()) {
+        const n = { ...item };
+        delete n.duplicada;
+        if (item.duplicada) {
+          const dia = new Date(`${n.fecha}T12:00:00`).getDay();
+          const esSabado = dia === 6;
+          n.hora_inicio = "07:00";
+          n.hora_fin = esSabado ? "11:00" : "16:00";
+          n.duracion = esSabado ? 4 : 8;
+          n.responsable = "Equipo";
+        }
+        nuevas.push(n);
       }
 
       if (nuevas.length === 0) {
