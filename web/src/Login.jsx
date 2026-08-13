@@ -28,6 +28,23 @@ export default function Login() {
       <form className="login-tarjeta" onSubmit={entrar}>
         <div className="login-marca">
           <span className="login-sol" title="Energía solar">☀️</span>
+          <div className="login-paneles">
+            {[16, 6, -6, -16].map((ang, i) => (
+              <svg
+                key={i}
+                className="login-panel"
+                style={{ transform: `rotate(${ang}deg)` }}
+                viewBox="0 0 60 40"
+                aria-hidden="true"
+              >
+                <rect x="3" y="3" width="54" height="34" rx="4" fill="#1e3a8a" stroke="#60a5fa" strokeWidth="2" />
+                <line x1="21" y1="5" x2="21" y2="35" stroke="#60a5fa" strokeWidth="1.5" />
+                <line x1="39" y1="5" x2="39" y2="35" stroke="#60a5fa" strokeWidth="1.5" />
+                <line x1="5" y1="15" x2="55" y2="15" stroke="#60a5fa" strokeWidth="1.5" />
+                <line x1="5" y1="25" x2="55" y2="25" stroke="#60a5fa" strokeWidth="1.5" />
+              </svg>
+            ))}
+          </div>
           <img src="/logo.png" alt="Ortiz Energía" className="login-logo" />
           <h1>Bitácora de mantenimiento</h1>
           <h2>Planta Fotovoltaica La Independencia</h2>

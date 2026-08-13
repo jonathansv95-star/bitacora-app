@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import * as XLSX from "xlsx";
 import { supabase } from "./supabase";
 import { paginarTareas } from "./tareasAll.js";
+import { descargarPdfMesAnterior, descargarPdfMesActual } from "./pdfTareas.js";
 
 function hoyISO() {
   const d = new Date();
@@ -128,8 +129,16 @@ export default function TareasTab() {
   const [fecha, setFecha] = useState(hoyISO());
   const [tareas, setTareas] = useState([]);
   const [cargando, setCargando] = useState(true);
-  const [descripcion, setDescripcion] = useState("");
-  const [area, setArea] = useState("");
+  const [nuevaForm, setNuevaForm] = useState({
+    fecha: hoyISO(),
+    descripcion: "",
+    area: "",
+    hora_inicio: "",
+    hora_fin: "",
+    duracion: "",
+    codigo: "",
+    frecuencia: "",
+  });
   const [guardando, setGuardando] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [importando, setImportando] = useState(false);
@@ -139,6 +148,7 @@ export default function TareasTab() {
   const [editForm, setEditForm] = useState(null);
   const [procedimientos, setProcedimientos] = useState({});
   const [manualAbierto, setManualAbierto] = useState({});
+  const [generandoPdf, setGenerandoPdf] = useState("");
 
   useEffect(() => {
     supabase
@@ -155,6 +165,18 @@ export default function TareasTab() {
 
   function toggleManual(id) {
     setManualAbierto((actual) => ({ ...actual, [id]: !actual[id] }));
+  }
+
+  async function generarPdf(modo) {
+    setGenerandoPdf(modo);
+    setMensaje("");
+    try {
+      if (modo === "anterior") await descargarPdfMesAnterior();
+      else await descargarPdfMesActual();
+    } catch (e) {
+      setMensaje("No se pudo generar el PDF: " + (e.message || e));
+    }
+    setGenerandoPdf("");
   }
 
   async function cargar() {
@@ -178,6 +200,14 @@ export default function TareasTab() {
   useEffect(() => {
     cargar();
   }, [fecha]);
+
+  useEffect(() => {
+    setNuevaForm((f) => ({ ...f, fecha }));
+  }, [fecha]);
+
+  function setNueva(campo, valor) {
+    setNuevaForm((f) => ({ ...f, [campo]: valor }));
+  }
 
   const cargarRef = useRef(cargar);
   useEffect(() => {
@@ -207,26 +237,40 @@ export default function TareasTab() {
 
   async function agregar(e) {
     e.preventDefault();
-    if (!descripcion.trim()) {
+    if (!nuevaForm.descripcion.trim()) {
       setMensaje("Escribe la tarea.");
       return;
     }
     setGuardando(true);
     setMensaje("");
     const { error } = await supabase.from("tareas").insert({
-      fecha,
-      descripcion: descripcion.trim(),
-      area: area.trim(),
+      fecha: nuevaForm.fecha,
+      descripcion: nuevaForm.descripcion.trim(),
+      area: nuevaForm.area.trim(),
+      codigo: nuevaForm.codigo.trim(),
+      frecuencia: nuevaForm.frecuencia.trim(),
+      hora_inicio: nuevaForm.hora_inicio,
+      hora_fin: nuevaForm.hora_fin,
+      duracion: Number(nuevaForm.duracion) || 0,
       estado: "pendiente",
       prioridad: "normal",
+      archivada: false,
     });
     setGuardando(false);
     if (error) {
       setMensaje("Error al guardar: " + error.message);
       return;
     }
-    setDescripcion("");
-    setArea("");
+    setNuevaForm((f) => ({
+      ...f,
+      descripcion: "",
+      area: "",
+      hora_inicio: "",
+      hora_fin: "",
+      duracion: "",
+      codigo: "",
+      frecuencia: "",
+    }));
     cargar();
   }
 
@@ -583,15 +627,60 @@ export default function TareasTab() {
           <input
             className="campo"
             placeholder="Tarea a realizar (ej: Revisar CT 4)"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
+            value={nuevaForm.descripcion}
+            onChange={(e) => setNueva("descripcion", e.target.value)}
+          />
+          <input
+            className="campo"
+            type="date"
+            value={nuevaForm.fecha}
+            onChange={(e) => setNueva("fecha", e.target.value)}
+            style={{ maxWidth: 160 }}
+          />
+          <input
+            className="campo"
+            type="time"
+            value={nuevaForm.hora_inicio}
+            onChange={(e) => setNueva("hora_inicio", e.target.value)}
+            style={{ maxWidth: 130 }}
+          />
+          <input
+            className="campo"
+            type="time"
+            value={nuevaForm.hora_fin}
+            onChange={(e) => setNueva("hora_fin", e.target.value)}
+            style={{ maxWidth: 130 }}
+          />
+          <input
+            className="campo"
+            type="number"
+            min="0"
+            step="0.5"
+            placeholder="Duración (h)"
+            value={nuevaForm.duracion}
+            onChange={(e) => setNueva("duracion", e.target.value)}
+            style={{ maxWidth: 120 }}
           />
           <input
             className="campo"
             placeholder="Área / equipo"
-            value={area}
-            onChange={(e) => setArea(e.target.value)}
-            style={{ maxWidth: 180 }}
+            value={nuevaForm.area}
+            onChange={(e) => setNueva("area", e.target.value)}
+            style={{ maxWidth: 170 }}
+          />
+          <input
+            className="campo"
+            placeholder="Código"
+            value={nuevaForm.codigo}
+            onChange={(e) => setNueva("codigo", e.target.value)}
+            style={{ maxWidth: 110 }}
+          />
+          <input
+            className="campo"
+            placeholder="Frecuencia"
+            value={nuevaForm.frecuencia}
+            onChange={(e) => setNueva("frecuencia", e.target.value)}
+            style={{ maxWidth: 140 }}
           />
           <button className="btn-primario" type="submit" disabled={guardando}>
             {guardando ? "Guardando..." : "+ Agregar"}
@@ -614,6 +703,12 @@ export default function TareasTab() {
           </button>
           <button className="btn-primario" onClick={iniciarNuevoAnio} disabled={iniciando}>
             {iniciando ? "Generando..." : "🔁 Iniciar nuevo año"}
+          </button>
+          <button className="btn-secundario" onClick={() => generarPdf("anterior")} disabled={generandoPdf === "anterior"}>
+            {generandoPdf === "anterior" ? "Generando..." : "📕 PDF mes anterior"}
+          </button>
+          <button className="btn-secundario" onClick={() => generarPdf("actual")} disabled={generandoPdf === "actual"}>
+            {generandoPdf === "actual" ? "Generando..." : "📗 PDF mes actual"}
           </button>
           <span className="ayuda">
             Reconoce el "Cronograma Detallado" anual (Fecha, Actividad, Código, Frecuencia,

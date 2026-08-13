@@ -221,10 +221,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  background:
-    radial-gradient(1000px 500px at 80% -10%, var(--primario-claro), transparent 60%),
-    radial-gradient(800px 400px at -10% 110%, var(--primario-claro), transparent 55%),
-    var(--fondo);
+  background: url("/planta.jpg") center / cover no-repeat;
   padding: 24px;
   position: relative;
   overflow: hidden;
@@ -234,9 +231,7 @@ button {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(var(--borde) 1px, transparent 1px);
-  background-size: 26px 26px;
-  opacity: 0.5;
+  background: linear-gradient(180deg, rgba(6, 10, 18, 0.68) 0%, rgba(6, 10, 18, 0.88) 100%);
   pointer-events: none;
 }
 
@@ -273,6 +268,19 @@ button {
   align-items: center;
   gap: 12px;
   margin-bottom: 4px;
+}
+
+.login-paneles {
+  display: flex;
+  align-items: flex-start;
+  gap: 7px;
+  margin-top: 4px;
+}
+
+.login-panel {
+  width: 46px;
+  height: 32px;
+  filter: drop-shadow(0 4px 10px rgba(34, 211, 238, 0.45));
 }
 
 .login-sol {
