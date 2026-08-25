@@ -2122,3 +2122,81 @@ button {
   border-color: rgba(34, 211, 238, 0.5);
   background: rgba(34, 211, 238, 0.1);
 }
+
+/* ============================================================
+   TABLERO · Mejoras visuales
+   ============================================================ */
+.dash-fecha {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: var(--texto-suave);
+  text-transform: capitalize;
+}
+
+.dash-cabecera-derecha {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.btn-refrescar {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid var(--borde);
+  background: var(--superficie);
+  color: var(--texto-suave);
+  border-radius: var(--radio-pill);
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: var(--sombra-suave);
+  transition: background 0.15s ease, color 0.15s ease, transform 0.2s ease,
+    box-shadow 0.15s ease, border-color 0.15s ease;
+}
+
+.btn-refrescar:hover:not(:disabled) {
+  background: var(--primario-suave);
+  color: var(--primario);
+  border-color: var(--primario);
+  box-shadow: 0 4px 12px var(--primario-glow);
+  transform: translateY(-1px);
+}
+
+.btn-refrescar:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.icono-refresco {
+  display: inline-block;
+  font-size: 16px;
+  line-height: 1;
+}
+
+.icono-refresco.girando {
+  animation: girar 0.9s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.kpi-barra {
+  margin-top: 10px;
+  height: 5px;
+  background: var(--superficie-2);
+  border: 1px solid var(--borde);
+  border-radius: var(--radio-pill);
+  overflow: hidden;
+}
+
+.kpi-barra-llena {
+  height: 100%;
+  border-radius: var(--radio-pill);
+  transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+}

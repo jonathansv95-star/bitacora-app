@@ -34,12 +34,31 @@ function colorPct(p) {
   return "var(--peligro)";
 }
 
+function Contador({ valor }) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    let raf;
+    let inicio = null;
+    const tick = (ahora) => {
+      if (inicio === null) inicio = ahora;
+      const p = Math.min((ahora - inicio) / 900, 1);
+      const ease = 1 - Math.pow(1 - p, 3);
+      setV(Math.round(valor * ease));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [valor]);
+  return v;
+}
+
 export default function DashboardTab({ onIr }) {
   const [cargando, setCargando] = useState(true);
   const [tareas, setTareas] = useState([]);
   const [error, setError] = useState("");
   const [listo, setListo] = useState(false);
   const [calendario, setCalendario] = useState(false);
+  const [refrescando, setRefrescando] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setListo(true), 120);
@@ -54,6 +73,12 @@ export default function DashboardTab({ onIr }) {
       setError(e.message);
     }
     setCargando(false);
+  }
+
+  async function recargar() {
+    setRefrescando(true);
+    await cargar();
+    setRefrescando(false);
   }
 
   useEffect(() => {
@@ -207,12 +232,26 @@ export default function DashboardTab({ onIr }) {
       <div className="dash-cabecera">
         <div>
           <h2>Tablero de avance de mantenimiento</h2>
+          <p className="dash-fecha">
+            {new Date().toLocaleDateString("es-ES", {
+              weekday: "long",
+              day: "numeric",
+              month: "long",
+              year: "numeric",
+            })}
+          </p>
         </div>
-        <div className="dash-leyenda">
-          <span className="leyenda-item"><i className="dot dot-exito" /> Completada</span>
-          <span className="leyenda-item"><i className="dot dot-avance" /> En progreso</span>
-          <span className="leyenda-item"><i className="dot dot-pend" /> Pendiente</span>
-          <span className="leyenda-item"><i className="dot dot-vencida" /> Atrasada</span>
+        <div className="dash-cabecera-derecha">
+          <div className="dash-leyenda">
+            <span className="leyenda-item"><i className="dot dot-exito" /> Completada</span>
+            <span className="leyenda-item"><i className="dot dot-avance" /> En progreso</span>
+            <span className="leyenda-item"><i className="dot dot-pend" /> Pendiente</span>
+            <span className="leyenda-item"><i className="dot dot-vencida" /> Atrasada</span>
+          </div>
+          <button className="btn-refrescar" onClick={recargar} disabled={refrescando} title="Recargar datos">
+            <span className={`icono-refresco ${refrescando ? "girando" : ""}`}>↻</span>
+            {refrescando ? "Actualizando..." : "Actualizar"}
+          </button>
         </div>
       </div>
 
@@ -224,52 +263,67 @@ export default function DashboardTab({ onIr }) {
             <span className="kpi-icono" style={{ background: "var(--sol-suave)", borderColor: "var(--sol-claro)" }}>☀️</span>
           </div>
           <span className="kpi-valor" style={{ color: colorPct(datos.ponderado) }}>
-            {pctAnillo}%
+            <Contador valor={pctAnillo} />%
           </span>
-          <span className="kpi-sub">{datos.hechas.length} de {datos.enPlan.length} completadas</span>
+          <span className="kpi-sub"><Contador valor={datos.hechas.length} /> de {datos.enPlan.length} completadas</span>
+          <div className="kpi-barra">
+            <div className="kpi-barra-llena" style={{ width: listo ? `${Math.round(datos.ponderado * 100)}%` : "0%", background: colorPct(datos.ponderado) }} />
+          </div>
         </button>
         <button className="kpi kpi-clic" style={{ borderTop: "4px solid var(--exito)" }} onClick={() => setCalendario(true)} title="Ver avance por fecha en el calendario">
           <div className="kpi-top">
             <span className="kpi-titulo">Completadas</span>
             <span className="kpi-icono" style={{ background: "var(--exito-fondo)" }}>✅</span>
           </div>
-          <span className="kpi-valor">{datos.hechas.length}</span>
+          <span className="kpi-valor"><Contador valor={datos.hechas.length} /></span>
           <span className="kpi-sub">hasta la fecha de hoy</span>
+          <div className="kpi-barra">
+            <div className="kpi-barra-llena" style={{ width: listo ? `${Math.round(datos.global * 100)}%` : "0%", background: "var(--exito)" }} />
+          </div>
         </button>
         <button className="kpi kpi-clic" style={{ borderTop: "4px solid var(--advertencia)" }} onClick={() => setCalendario(true)} title="Ver avance por fecha en el calendario">
           <div className="kpi-top">
             <span className="kpi-titulo">En progreso</span>
             <span className="kpi-icono" style={{ background: "var(--advertencia-fondo)" }}>🚧</span>
           </div>
-          <span className="kpi-valor">{datos.enProgreso.length}</span>
+          <span className="kpi-valor"><Contador valor={datos.enProgreso.length} /></span>
           <span className="kpi-sub">a medio camino</span>
+          <div className="kpi-barra">
+            <div className="kpi-barra-llena" style={{ width: listo ? `${Math.round((datos.enProgreso.length / (datos.enPlan.length || 1)) * 100)}%` : "0%", background: "var(--advertencia)" }} />
+          </div>
         </button>
         <button className="kpi kpi-clic" style={{ borderTop: "4px solid var(--peligro)" }} onClick={() => setCalendario(true)} title="Ver avance por fecha en el calendario">
           <div className="kpi-top">
             <span className="kpi-titulo">Pendientes</span>
             <span className="kpi-icono" style={{ background: "var(--peligro-fondo)" }}>⏳</span>
           </div>
-          <span className="kpi-valor">{datos.pendientes.length}</span>
+          <span className="kpi-valor"><Contador valor={datos.pendientes.length} /></span>
           <span className={`kpi-sub ${datos.atrasadas.length ? "alerta" : ""}`}>
             {datos.atrasadas.length} atrasada(s)
           </span>
+          <div className="kpi-barra">
+            <div className="kpi-barra-llena" style={{ width: listo ? `${Math.round((datos.pendientes.length / (datos.enPlan.length || 1)) * 100)}%` : "0%", background: "var(--peligro)" }} />
+          </div>
         </button>
         <button className="kpi kpi-clic" style={{ borderTop: "4px solid var(--primario)" }} onClick={() => onIr("tareas")} title="Ir a Tareas del día">
           <div className="kpi-top">
             <span className="kpi-titulo">Hoy</span>
             <span className="kpi-icono" style={{ background: "var(--primario-suave)" }}>📌</span>
           </div>
-          <span className="kpi-valor">{datos.hoyHechas}/{datos.hoyTareas.length}</span>
+          <span className="kpi-valor"><Contador valor={datos.hoyHechas} />/{datos.hoyTareas.length}</span>
           <span className="kpi-sub">
             {datos.hoyTareas.length === 0 ? "sin tareas hoy" : "marca tu avance en Tareas del día"}
           </span>
+          <div className="kpi-barra">
+            <div className="kpi-barra-llena" style={{ width: listo ? `${Math.round((datos.hoyTareas.length ? datos.hoyHechas / datos.hoyTareas.length : 0) * 100)}%` : "0%", background: "var(--primario)" }} />
+          </div>
         </button>
       </div>
 
       {/* Hero: anillo + estado del día */}
       <div className="dash-hero">
         <div className="tarjeta-grafica anillo-tarjeta">
-          <h3>Progreso del plan anual</h3>
+          <h3>🎯 Progreso del plan anual</h3>
           <div className="anillo">
             <svg viewBox="0 0 200 200" className="anillo-svg">
               <circle cx="100" cy="100" r={radio} fill="none" stroke="var(--borde)" strokeWidth="16" />
@@ -304,7 +358,7 @@ export default function DashboardTab({ onIr }) {
 
         <div className="tarjeta-grafica">
           <div className="grafica-titulo">
-            <h3>Tareas de hoy</h3>
+            <h3>📌 Tareas de hoy</h3>
             <button className="enlace" onClick={() => onIr("tareas")}>Ver y marcar →</button>
           </div>
           {datos.hoyTareas.length === 0 ? (
@@ -329,7 +383,7 @@ export default function DashboardTab({ onIr }) {
       {/* Gráficas: área y frecuencia */}
       <div className="dash-grid-2">
         <div className="tarjeta-grafica">
-          <h3>Avance por área</h3>
+          <h3>🗂️ Avance por área</h3>
           {datos.porArea.length === 0 ? (
             <p className="vacio">Sin áreas registradas.</p>
           ) : (
@@ -358,7 +412,7 @@ export default function DashboardTab({ onIr }) {
         </div>
 
         <div className="tarjeta-grafica">
-          <h3>Avance por frecuencia</h3>
+          <h3>🔁 Avance por frecuencia</h3>
           {datos.porFrecuencia.length === 0 ? (
             <p className="vacio">Sin frecuencias registradas.</p>
           ) : (
@@ -389,7 +443,7 @@ export default function DashboardTab({ onIr }) {
 
       {/* Avance por mes con línea acumulada */}
       <div className="tarjeta-grafica">
-        <h3>Avance por mes y línea acumulada del año</h3>
+        <h3>📈 Avance por mes y línea acumulada del año</h3>
         <div className="barras-meses">
           {datos.porMes.map((m) => {
             const futuro = m.programadas === 0 && m.total > 0;
@@ -485,7 +539,7 @@ export default function DashboardTab({ onIr }) {
 
       {/* Calendario de calor */}
       <div className="tarjeta-grafica">
-        <h3>Calendario de cumplimiento (14 semanas)</h3>
+        <h3>🗓️ Calendario de cumplimiento (14 semanas)</h3>
         <div className="heatmap">
           <div className="heat-dias">
             <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
@@ -514,7 +568,7 @@ export default function DashboardTab({ onIr }) {
       {/* Próximas y atrasadas */}
       <div className="dash-grid-2">
         <div className="tarjeta-grafica">
-          <h3>Próximas tareas</h3>
+          <h3>⏭️ Próximas tareas</h3>
           {datos.proximas.length === 0 ? (
             <p className="vacio">No quedan tareas pendientes por venir.</p>
           ) : (
@@ -534,7 +588,7 @@ export default function DashboardTab({ onIr }) {
         </div>
 
         <div className="tarjeta-grafica">
-          <h3>Atrasadas <span className="etiqueta-roja">{datos.atrasadas.length}</span></h3>
+          <h3>⚠️ Atrasadas <span className="etiqueta-roja">{datos.atrasadas.length}</span></h3>
           {datos.atrasadas.length === 0 ? (
             <p className="vacio">¡Sin tareas vencidas! El plan va al día.</p>
           ) : (
