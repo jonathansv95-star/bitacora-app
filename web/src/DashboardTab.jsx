@@ -14,6 +14,11 @@ function moverFecha(iso, dias) {
   return `${fecha.getFullYear()}-${String(fecha.getMonth() + 1).padStart(2, "0")}-${String(fecha.getDate()).padStart(2, "0")}`;
 }
 
+function domingoDe(iso) {
+  const [a, m, d] = iso.split("-").map(Number);
+  return moverFecha(iso, -new Date(a, m - 1, d).getDay());
+}
+
 function fechaCorta(iso) {
   const [, m, d] = iso.split("-").map(Number);
   return `${String(d).padStart(2, "0")}/${String(m).padStart(2, "0")}`;
@@ -167,7 +172,7 @@ export default function DashboardTab({ onIr }) {
       .slice(0, 6);
 
     const dias = [];
-    const inicio = moverFecha(hoy, -97);
+    const inicio = moverFecha(domingoDe(hoy), -91);
     for (let i = 0; i < 98; i++) {
       const d = moverFecha(inicio, i);
       const grupo = tareas.filter((t) => t.fecha === d);
