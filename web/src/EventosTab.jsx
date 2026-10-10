@@ -5,16 +5,16 @@ const MEDIOS = ["Todos", "Scada", "Campo"];
 const BUCKET_FOTOS = "fotos-eventos";
 
 function ordenarStrings(a, b) {
-  if (a.fecha !== b.fecha || a.hora?.slice(0, 5) !== b.hora?.slice(0, 5)) return 0;
+  if (a.fecha !== b.fecha) return a.fecha < b.fecha ? 1 : -1;
+  const horaA = (a.hora || "").slice(0, 5);
+  const horaB = (b.hora || "").slice(0, 5);
+  if (horaA !== horaB) return horaA < horaB ? 1 : -1;
+
   const dispositivoA = String(a.dispositivo || "").toLowerCase();
   const dispositivoB = String(b.dispositivo || "").toLowerCase();
-  const esStringA = dispositivoA.includes("cable solar rojo") || dispositivoA.includes("cable solar negro");
-  const esStringB = dispositivoB.includes("cable solar rojo") || dispositivoB.includes("cable solar negro");
-  if (!esStringA || !esStringB) return 0;
-
-  const colorA = dispositivoA.includes("rojo") ? 0 : 1;
-  const colorB = dispositivoB.includes("rojo") ? 0 : 1;
-  return colorA - colorB || Number(a.string_num || 0) - Number(b.string_num || 0);
+  const grupoA = dispositivoA.includes("rojo") ? 0 : dispositivoA.includes("negro") ? 1 : 2;
+  const grupoB = dispositivoB.includes("rojo") ? 0 : dispositivoB.includes("negro") ? 1 : 2;
+  return grupoA - grupoB || Number(a.string_num || 0) - Number(b.string_num || 0);
 }
 
 export default function EventosTab() {
