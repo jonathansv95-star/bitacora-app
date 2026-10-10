@@ -5,7 +5,7 @@ const MEDIOS = ["Todos", "Scada", "Campo"];
 const BUCKET_FOTOS = "fotos-eventos";
 
 function ordenarStrings(a, b) {
-  if (a.fecha !== b.fecha || a.hora !== b.hora) return 0;
+  if (a.fecha !== b.fecha || a.hora?.slice(0, 5) !== b.hora?.slice(0, 5)) return 0;
   const dispositivoA = String(a.dispositivo || "").toLowerCase();
   const dispositivoB = String(b.dispositivo || "").toLowerCase();
   const esStringA = dispositivoA.includes("cable solar rojo") || dispositivoA.includes("cable solar negro");
