@@ -4,6 +4,7 @@ import { supabase } from "./supabase";
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const [cargando, setCargando] = useState(false);
   const [mensaje, setMensaje] = useState("");
 
@@ -25,46 +26,69 @@ export default function Login() {
 
   return (
     <div className="login-fondo">
+      <div className="login-escena" aria-hidden="true">
+        <div className="login-escena-contenido">
+          <span className="login-etiqueta">OPERACION Y MANTENIMIENTO</span>
+          <span className="login-sol">☀️</span>
+          <h1>La Independencia</h1>
+          <p>Control operativo de tu planta fotovoltaica.</p>
+          <div className="login-estadistica">
+            <strong>Bitacora digital</strong>
+            <span>Todo el seguimiento en un solo lugar</span>
+          </div>
+        </div>
+        <div className="login-lineas" />
+      </div>
+
       <form className="login-tarjeta" onSubmit={entrar}>
         <div className="login-marca">
-          <span className="login-sol" title="Energía solar">☀️</span>
-          <div className="login-paneles">
-            {[16, 6, -6, -16].map((ang, i) => (
-              <svg
-                key={i}
-                className="login-panel"
-                style={{ transform: `rotate(${ang}deg)` }}
-                viewBox="0 0 60 40"
-                aria-hidden="true"
-              >
-                <rect x="3" y="3" width="54" height="34" rx="4" fill="#1e3a8a" stroke="#60a5fa" strokeWidth="2" />
-                <line x1="21" y1="5" x2="21" y2="35" stroke="#60a5fa" strokeWidth="1.5" />
-                <line x1="39" y1="5" x2="39" y2="35" stroke="#60a5fa" strokeWidth="1.5" />
-                <line x1="5" y1="15" x2="55" y2="15" stroke="#60a5fa" strokeWidth="1.5" />
-                <line x1="5" y1="25" x2="55" y2="25" stroke="#60a5fa" strokeWidth="1.5" />
-              </svg>
-            ))}
-          </div>
           <img src="/logo.png" alt="Ortiz Energía" className="login-logo" />
-          <h1>Bitácora de mantenimiento</h1>
-          <h2>Planta Fotovoltaica La Independencia</h2>
+          <div>
+            <h2>Bitácora de mantenimiento</h2>
+            <p>Planta Fotovoltaica La Independencia</p>
+          </div>
         </div>
-        <input
-          type="email"
-          placeholder="Correo electrónico"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          autoComplete="email"
-        />
-        <input
-          type="password"
-          placeholder="Contraseña"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="current-password"
-        />
-        <button className="btn-primario" type="submit" disabled={cargando}>
-          {cargando ? "Entrando..." : "Iniciar sesión"}
+        <div className="login-bienvenida">
+          <h1>Bienvenido de nuevo</h1>
+          <p>Ingresa tus datos para continuar</p>
+        </div>
+        <label className="login-campo">
+          <span>Correo electrónico</span>
+          <div className="login-input-wrap">
+            <span className="login-input-icono" aria-hidden="true">@</span>
+            <input
+              type="email"
+              placeholder="tu-correo@empresa.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+            />
+          </div>
+        </label>
+        <label className="login-campo">
+          <span>Contraseña</span>
+          <div className="login-input-wrap">
+            <span className="login-input-icono" aria-hidden="true">*</span>
+            <input
+              type={mostrarPassword ? "text" : "password"}
+              placeholder="Escribe tu contraseña"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="current-password"
+            />
+            <button
+              className="login-ver-password"
+              type="button"
+              onClick={() => setMostrarPassword(!mostrarPassword)}
+              aria-label={mostrarPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+            >
+              {mostrarPassword ? "Ocultar" : "Ver"}
+            </button>
+          </div>
+        </label>
+        <button className="btn-primario login-submit" type="submit" disabled={cargando}>
+          <span>{cargando ? "Validando acceso..." : "Iniciar sesión"}</span>
+          {!cargando && <span aria-hidden="true">→</span>}
         </button>
         {mensaje && <p className="aviso">{mensaje}</p>}
         <p className="login-pie">Acceso restringido al equipo de operación y mantenimiento.</p>
