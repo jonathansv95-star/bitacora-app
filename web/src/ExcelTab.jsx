@@ -26,6 +26,19 @@ function pad(n) {
   return String(n).padStart(2, "0");
 }
 
+function ordenarStrings(a, b) {
+  if (a.fecha !== b.fecha || a.hora !== b.hora) return 0;
+  const dispositivoA = String(a.dispositivo || "").toLowerCase();
+  const dispositivoB = String(b.dispositivo || "").toLowerCase();
+  const esStringA = dispositivoA.includes("cable solar rojo") || dispositivoA.includes("cable solar negro");
+  const esStringB = dispositivoB.includes("cable solar rojo") || dispositivoB.includes("cable solar negro");
+  if (!esStringA || !esStringB) return 0;
+
+  const colorA = dispositivoA.includes("rojo") ? 0 : 1;
+  const colorB = dispositivoB.includes("rojo") ? 0 : 1;
+  return colorA - colorB || Number(a.string_num || 0) - Number(b.string_num || 0);
+}
+
 function bordeFino() {
   return {
     top: { style: "thin", color: { rgb: COLOR_BORDE } },
@@ -101,6 +114,8 @@ export default function ExcelTab() {
         setGenerando(false);
         return;
       }
+
+      data.sort(ordenarStrings);
 
       setMensaje("Preparando enlaces de fotos...");
       const fotosPorRuta = await mapaDeFotos(data);

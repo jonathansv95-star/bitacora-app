@@ -4,6 +4,19 @@ import { supabase } from "./supabase";
 const MEDIOS = ["Todos", "Scada", "Campo"];
 const BUCKET_FOTOS = "fotos-eventos";
 
+function ordenarStrings(a, b) {
+  if (a.fecha !== b.fecha || a.hora !== b.hora) return 0;
+  const dispositivoA = String(a.dispositivo || "").toLowerCase();
+  const dispositivoB = String(b.dispositivo || "").toLowerCase();
+  const esStringA = dispositivoA.includes("cable solar rojo") || dispositivoA.includes("cable solar negro");
+  const esStringB = dispositivoB.includes("cable solar rojo") || dispositivoB.includes("cable solar negro");
+  if (!esStringA || !esStringB) return 0;
+
+  const colorA = dispositivoA.includes("rojo") ? 0 : 1;
+  const colorB = dispositivoB.includes("rojo") ? 0 : 1;
+  return colorA - colorB || Number(a.string_num || 0) - Number(b.string_num || 0);
+}
+
 export default function EventosTab() {
   const [eventos, setEventos] = useState([]);
   const [cargando, setCargando] = useState(true);
@@ -79,7 +92,7 @@ export default function EventosTab() {
         ev.responsable_desc,
       ];
       return campos.some((c) => c && String(c).toLowerCase().includes(texto));
-    });
+    }).sort(ordenarStrings);
   }, [eventos, busqueda, medio, fechaDesde, fechaHasta]);
 
   const visibles = filtrados.slice(0, limite);
