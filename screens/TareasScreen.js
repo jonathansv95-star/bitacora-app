@@ -99,7 +99,7 @@ export default function TareasScreen({ navigation }) {
         sections={secciones}
         keyExtractor={(item) => item.id}
         refreshControl={<RefreshControl refreshing={refrescando} onRefresh={onRefresh} />}
-        contentContainerStyle={{ padding: espacio.lg, paddingBottom: 40 }}
+        contentContainerStyle={{ padding: espacio.lg, paddingBottom: 130 }}
         ListEmptyComponent={
           <View style={styles.vacio}>
             <Text style={styles.vacioTitulo}>

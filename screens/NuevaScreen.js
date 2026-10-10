@@ -211,6 +211,14 @@ export default function NuevaScreen({ navigation, route }) {
         contentContainerStyle={{ padding: espacio.xl, paddingBottom: 60 }}
         keyboardShouldPersistTaps="handled"
       >
+        <TouchableOpacity
+          style={styles.botonReporteStrings}
+          onPress={() => navigation.navigate("ReporteStrings")}
+          disabled={guardando}
+        >
+          <Text style={styles.botonReporteStringsTexto}>Reporte de cambio cable en string</Text>
+        </TouchableOpacity>
+
         <Text style={styles.etiqueta}>Fecha</Text>
         <TextInput style={styles.input} value={fecha} onChangeText={setFecha} placeholder="AAAA-MM-DD" placeholderTextColor={colores.textoTenue} />
 
@@ -439,5 +447,15 @@ const styles = StyleSheet.create({
     marginTop: 28,
   },
   botonTexto: { color: "#fff", fontSize: tipografia.cuerpo, fontWeight: tipografia.pesoMedia },
+  botonReporteStrings: {
+    borderWidth: 1,
+    borderColor: colores.primario,
+    borderRadius: radio.md,
+    padding: 13,
+    alignItems: "center",
+    backgroundColor: colores.primarioSuave,
+    marginBottom: 8,
+  },
+  botonReporteStringsTexto: { color: colores.primario, fontSize: 14, fontWeight: tipografia.pesoMedia },
   progreso: { textAlign: "center", color: colores.textoSuave, marginTop: 10, fontSize: 13 },
 });

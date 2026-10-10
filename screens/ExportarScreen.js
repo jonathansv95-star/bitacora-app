@@ -40,6 +40,19 @@ function pad(n) {
   return String(n).padStart(2, "0");
 }
 
+function ordenarStrings(a, b) {
+  if (a.fecha !== b.fecha) return a.fecha < b.fecha ? -1 : 1;
+  const horaA = (a.hora || "").slice(0, 5);
+  const horaB = (b.hora || "").slice(0, 5);
+  if (horaA !== horaB) return horaA < horaB ? -1 : 1;
+
+  const dispositivoA = String(a.dispositivo || "").toLowerCase();
+  const dispositivoB = String(b.dispositivo || "").toLowerCase();
+  const grupoA = dispositivoA.includes("rojo") ? 0 : dispositivoA.includes("negro") ? 1 : 2;
+  const grupoB = dispositivoB.includes("rojo") ? 0 : dispositivoB.includes("negro") ? 1 : 2;
+  return grupoA - grupoB || Number(a.string_num || 0) - Number(b.string_num || 0);
+}
+
 function bordeFino() {
   return {
     top: { style: "thin", color: { rgb: COLOR_BORDE } },
@@ -103,6 +116,8 @@ export default function ExportarScreen() {
         setProgreso("");
         return;
       }
+
+      data.sort(ordenarStrings);
 
       setProgreso("Preparando enlaces de fotos...");
       const fotosPorRuta = await mapaDeFotos(data);

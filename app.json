@@ -40,7 +40,8 @@
           "photosPermission": "La app necesita acceso a tus fotos para adjuntar evidencia a las bitácoras.",
           "cameraPermission": "La app necesita la cámara para tomar fotos de los eventos registrados."
         }
-      ]
+      ],
+      "expo-sharing"
     ]
   }
 }

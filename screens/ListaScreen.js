@@ -14,6 +14,19 @@ import { colores, espacio, radio, tipografia, sombra } from "../lib/tema";
 
 const MEDIOS = ["Todos", "Scada", "Campo"];
 
+function ordenarStrings(a, b) {
+  if (a.fecha !== b.fecha) return a.fecha < b.fecha ? 1 : -1;
+  const horaA = (a.hora || "").slice(0, 5);
+  const horaB = (b.hora || "").slice(0, 5);
+  if (horaA !== horaB) return horaA < horaB ? 1 : -1;
+
+  const dispositivoA = String(a.dispositivo || "").toLowerCase();
+  const dispositivoB = String(b.dispositivo || "").toLowerCase();
+  const grupoA = dispositivoA.includes("rojo") ? 0 : dispositivoA.includes("negro") ? 1 : 2;
+  const grupoB = dispositivoB.includes("rojo") ? 0 : dispositivoB.includes("negro") ? 1 : 2;
+  return grupoA - grupoB || Number(a.string_num || 0) - Number(b.string_num || 0);
+}
+
 export default function ListaScreen({ navigation }) {
   const [eventos, setEventos] = useState([]);
   const [refrescando, setRefrescando] = useState(false);
@@ -33,7 +46,7 @@ export default function ListaScreen({ navigation }) {
       setCargando(false);
       return;
     }
-    setEventos(data);
+    setEventos([...data].sort(ordenarStrings));
     setCargando(false);
   }
 
@@ -260,7 +273,7 @@ const styles = StyleSheet.create({
   botonFlotanteSecundario: {
     position: "absolute",
     left: 20,
-    bottom: 30,
+    bottom: 112,
     backgroundColor: colores.superficie,
     borderWidth: 1,
     borderColor: colores.primario,
@@ -272,7 +285,7 @@ const styles = StyleSheet.create({
   botonFlotante: {
     position: "absolute",
     right: 20,
-    bottom: 30,
+    bottom: 112,
     backgroundColor: colores.primario,
     width: 56,
     height: 56,

@@ -21,6 +21,7 @@ import DetalleScreen from "./screens/DetalleScreen";
 import ExportarScreen from "./screens/ExportarScreen";
 import TareasScreen from "./screens/TareasScreen";
 import TareaDetalleScreen from "./screens/TareaDetalleScreen";
+import ReporteStringsScreen from "./screens/ReporteStringsScreen";
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -66,6 +67,52 @@ function IconoTab({ emoji, color, size }) {
   );
 }
 
+function BarraFlotante({ state, navigation, pendientes }) {
+  const opciones = [
+    { nombre: "Bitácoras", emoji: "📋" },
+    { nombre: "Tareas", emoji: "👷" },
+  ];
+
+  return (
+    <View style={styles.barraFlotante}>
+      {state.routes.map((route, index) => {
+        const activo = state.index === index;
+        const opcion = opciones[index];
+        const seleccionar = () => {
+          const evento = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+            canPreventDefault: true,
+          });
+          if (!activo && !evento.defaultPrevented) navigation.navigate(route.name);
+        };
+
+        return (
+          <TouchableOpacity
+            key={route.key}
+            accessibilityRole="button"
+            accessibilityLabel={opcion.nombre}
+            onPress={seleccionar}
+            style={styles.botonNavegacion}
+          >
+            <View style={[styles.iconoFlotante, activo && styles.iconoFlotanteActivo]}>
+              <Text style={styles.iconoFlotanteTexto}>{opcion.emoji}</Text>
+              {index === 1 && pendientes > 0 ? (
+                <View style={styles.badgeTareas}>
+                  <Text style={styles.badgeTareasTexto}>{pendientes}</Text>
+                </View>
+              ) : null}
+            </View>
+            <Text style={[styles.textoNavegacion, activo && styles.textoNavegacionActivo]}>
+              {opcion.nombre}
+            </Text>
+          </TouchableOpacity>
+        );
+      })}
+    </View>
+  );
+}
+
 function StackBitacoras() {
   return (
     <Stack.Navigator screenOptions={opcionesPantalla}>
@@ -78,6 +125,11 @@ function StackBitacoras() {
         }}
       />
       <Stack.Screen name="Nueva" component={NuevaScreen} />
+      <Stack.Screen
+        name="ReporteStrings"
+        component={ReporteStringsScreen}
+        options={{ title: "Cambio cable en string" }}
+      />
       <Stack.Screen
         name="Exportar"
         component={ExportarScreen}
@@ -199,26 +251,14 @@ export default function App() {
         </Stack.Navigator>
       ) : (
         <Tab.Navigator
-          screenOptions={{
-            headerShown: false,
-            tabBarActiveTintColor: colores.primario,
-            tabBarInactiveTintColor: colores.textoTenue,
-            tabBarStyle: {
-              backgroundColor: colores.superficie,
-              borderTopColor: colores.borde,
-              height: 62,
-              paddingBottom: 8,
-              paddingTop: 6,
-            },
-            tabBarLabelStyle: { fontSize: tipografia.miniatura, fontWeight: tipografia.pesoMedia },
-          }}
+          screenOptions={{ headerShown: false }}
+          tabBar={(props) => <BarraFlotante {...props} pendientes={pendientes} />}
         >
           <Tab.Screen
             name="BitacorasTab"
             component={StackBitacoras}
             options={{
               title: "Bitácoras",
-              tabBarIcon: ({ color, size }) => <IconoTab emoji="📋" color={color} size={size} />,
             }}
             listeners={{ focus: actualizarPendientes }}
           />
@@ -227,9 +267,6 @@ export default function App() {
             component={StackTareas}
             options={{
               title: "Tareas",
-              tabBarIcon: ({ color, size }) => <IconoTab emoji="👷" color={color} size={size} />,
-              tabBarBadge: pendientes > 0 ? pendientes : undefined,
-              tabBarBadgeStyle: { backgroundColor: colores.peligro, color: "#fff" },
             }}
           />
         </Tab.Navigator>
@@ -271,4 +308,52 @@ const styles = StyleSheet.create({
     fontSize: tipografia.cuerpo,
     fontWeight: tipografia.pesoMedia,
   },
+  barraFlotante: {
+    position: "absolute",
+    left: 24,
+    right: 24,
+    bottom: 24,
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 30,
+    paddingVertical: 8,
+    paddingHorizontal: 18,
+    borderRadius: 28,
+    backgroundColor: colores.superficie,
+    borderWidth: 1,
+    borderColor: colores.borde,
+    elevation: 8,
+    shadowColor: "#000",
+    shadowOpacity: 0.18,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 5 },
+  },
+  botonNavegacion: { alignItems: "center", minWidth: 72 },
+  iconoFlotante: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colores.fondo,
+    borderWidth: 1,
+    borderColor: colores.borde,
+  },
+  iconoFlotanteActivo: { backgroundColor: colores.primarioSuave, borderColor: colores.primario },
+  iconoFlotanteTexto: { fontSize: 21 },
+  textoNavegacion: { color: colores.textoTenue, fontSize: 11, marginTop: 2 },
+  textoNavegacionActivo: { color: colores.primario, fontWeight: tipografia.pesoNegrita },
+  badgeTareas: {
+    position: "absolute",
+    top: -5,
+    right: -5,
+    minWidth: 19,
+    height: 19,
+    paddingHorizontal: 4,
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: colores.peligro,
+  },
+  badgeTareasTexto: { color: "#fff", fontSize: 10, fontWeight: "700" },
 });
