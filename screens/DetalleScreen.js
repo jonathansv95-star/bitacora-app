@@ -130,7 +130,10 @@ export default function DetalleScreen({ route, navigation }) {
   }
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={{ padding: espacio.xl }}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={{ padding: espacio.xl, paddingBottom: 180 }}
+    >
       <View style={styles.fechaHoraFila}>
         <Text style={styles.fechaHora}>
           {evento.fecha} · {evento.hora?.slice(0, 5)}

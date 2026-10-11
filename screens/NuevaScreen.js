@@ -15,7 +15,7 @@ import {
 import { supabase } from "../lib/supabase";
 import { subirFotos, urlsDeFotos, borrarFotos } from "../lib/fotos";
 import { tomarFoto, elegirFotos } from "../lib/camara";
-import { colores, espacio, radio, tipografia } from "../lib/tema";
+import { colores, espacio, radio, tipografia, sombra } from "../lib/tema";
 
 const MAX_FOTOS = 10;
 
@@ -219,58 +219,65 @@ export default function NuevaScreen({ navigation, route }) {
           <Text style={styles.botonReporteStringsTexto}>Reporte de cambio cable en string</Text>
         </TouchableOpacity>
 
-        <Text style={styles.etiqueta}>Fecha</Text>
-        <TextInput style={styles.input} value={fecha} onChangeText={setFecha} placeholder="AAAA-MM-DD" placeholderTextColor={colores.textoTenue} />
+        <View style={styles.seccion}>
+          <Text style={styles.seccionTitulo}>Datos del reporte</Text>
+          <Text style={styles.etiqueta}>Fecha</Text>
+          <TextInput style={styles.input} value={fecha} onChangeText={setFecha} placeholder="AAAA-MM-DD" placeholderTextColor={colores.textoTenue} />
 
-        <Text style={styles.etiqueta}>Hora</Text>
-        <TextInput style={styles.input} value={hora} onChangeText={setHora} placeholder="HH:MM" placeholderTextColor={colores.textoTenue} />
+          <Text style={styles.etiqueta}>Hora</Text>
+          <TextInput style={styles.input} value={hora} onChangeText={setHora} placeholder="HH:MM" placeholderTextColor={colores.textoTenue} />
 
-        <Text style={styles.etiqueta}>Medio de detección</Text>
-        <View style={styles.filaBotones}>
-          {["Scada", "Campo"].map((op) => (
-            <TouchableOpacity
-              key={op}
-              style={[styles.chip, medioDeteccion === op && styles.chipActivo]}
-              onPress={() => setMedioDeteccion(op)}
-            >
-              <Text style={[styles.chipTexto, medioDeteccion === op && styles.chipTextoActivo]}>
-                {op}
-              </Text>
+          <Text style={styles.etiqueta}>Medio de detección</Text>
+          <View style={styles.filaBotones}>
+            {["Scada", "Campo"].map((op) => (
+              <TouchableOpacity
+                key={op}
+                style={[styles.chip, medioDeteccion === op && styles.chipActivo]}
+                onPress={() => setMedioDeteccion(op)}
+              >
+                <Text style={[styles.chipTexto, medioDeteccion === op && styles.chipTextoActivo]}>
+                  {op}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        </View>
+
+        <View style={styles.seccion}>
+          <Text style={styles.seccionTitulo}>Descripción del evento</Text>
+          <Text style={styles.etiqueta}>Evento *</Text>
+          <TextInput
+            style={[styles.input, styles.textarea]}
+            placeholder="Describe lo ocurrido..."
+            placeholderTextColor={colores.textoTenue}
+            value={eventoTexto}
+            onChangeText={setEventoTexto}
+            multiline
+          />
+
+          <Text style={styles.etiqueta}>Solución</Text>
+          <TextInput
+            style={[styles.input, styles.textarea]}
+            placeholder="¿Qué se hizo para resolverlo?"
+            placeholderTextColor={colores.textoTenue}
+            value={solucion}
+            onChangeText={setSolucion}
+            multiline
+          />
+        </View>
+
+        <View style={styles.seccion}>
+          <Text style={styles.seccionTitulo}>
+            Evidencia fotográfica {fotos.length > 0 ? `(${fotos.length}/${MAX_FOTOS})` : ""}
+          </Text>
+          <View style={styles.filaBotones}>
+            <TouchableOpacity style={styles.botonFoto} onPress={usarCamara} disabled={guardando}>
+              <Text style={styles.botonFotoTexto}>Tomar foto</Text>
             </TouchableOpacity>
-          ))}
-        </View>
-
-        <Text style={styles.etiqueta}>Evento *</Text>
-        <TextInput
-          style={[styles.input, styles.textarea]}
-          placeholder="Describe lo ocurrido..."
-          placeholderTextColor={colores.textoTenue}
-          value={eventoTexto}
-          onChangeText={setEventoTexto}
-          multiline
-        />
-
-        <Text style={styles.etiqueta}>Solución</Text>
-        <TextInput
-          style={[styles.input, styles.textarea]}
-          placeholder="¿Qué se hizo para resolverlo?"
-          placeholderTextColor={colores.textoTenue}
-          value={solucion}
-          onChangeText={setSolucion}
-          multiline
-        />
-
-        <Text style={styles.subtitulo}>
-          Fotos {fotos.length > 0 ? `(${fotos.length}/${MAX_FOTOS})` : ""}
-        </Text>
-        <View style={styles.filaBotones}>
-          <TouchableOpacity style={styles.botonFoto} onPress={usarCamara} disabled={guardando}>
-            <Text style={styles.botonFotoTexto}>Tomar foto</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.botonFoto} onPress={usarGaleria} disabled={guardando}>
-            <Text style={styles.botonFotoTexto}>Elegir de galería</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity style={styles.botonFoto} onPress={usarGaleria} disabled={guardando}>
+              <Text style={styles.botonFotoTexto}>Elegir de galería</Text>
+            </TouchableOpacity>
+          </View>
 
         {cargandoFotos ? (
           <ActivityIndicator style={{ marginTop: 16 }} color={colores.primario} />
@@ -291,10 +298,13 @@ export default function NuevaScreen({ navigation, route }) {
               </View>
             ))}
           </ScrollView>
-        ) : null}
+          ) : null}
+        </View>
 
-        <Text style={styles.subtitulo}>Ubicación del equipo (si aplica)</Text>
-        <View style={styles.filaCuatro}>
+        <View style={styles.seccion}>
+          <Text style={styles.seccionTitulo}>Ubicación del equipo</Text>
+          <Text style={styles.ayudaSeccion}>Completa estos datos si el reporte corresponde a un equipo específico.</Text>
+          <View style={styles.filaCuatro}>
           <View style={styles.columnaChica}>
             <Text style={styles.etiquetaChica}>CT</Text>
             <TextInput
@@ -335,26 +345,27 @@ export default function NuevaScreen({ navigation, route }) {
               onChangeText={setStringNum}
             />
           </View>
+          </View>
+
+          <Text style={styles.etiqueta}>Dispositivo</Text>
+          <TextInput style={styles.input} placeholder="Ej: Cable solar rojo" placeholderTextColor={colores.textoTenue} value={dispositivo} onChangeText={setDispositivo} />
+
+          <Text style={styles.etiqueta}>Cantidad</Text>
+          <TextInput style={styles.input} placeholder="Ej: 15" placeholderTextColor={colores.textoTenue} value={cantidad} onChangeText={setCantidad} keyboardType="numeric" />
+
+          <Text style={styles.etiqueta}>Descripción adicional</Text>
+          <TextInput
+            style={[styles.input, styles.textarea]}
+            placeholder="Detalles adicionales..."
+            placeholderTextColor={colores.textoTenue}
+            value={descripcion}
+            onChangeText={setDescripcion}
+            multiline
+          />
+
+          <Text style={styles.etiqueta}>N° Correctivo</Text>
+          <TextInput style={styles.input} placeholder="Si aplica" placeholderTextColor={colores.textoTenue} value={nCorrectivo} onChangeText={setNCorrectivo} />
         </View>
-
-        <Text style={styles.etiqueta}>Dispositivo</Text>
-        <TextInput style={styles.input} placeholder="Ej: Cable solar rojo" placeholderTextColor={colores.textoTenue} value={dispositivo} onChangeText={setDispositivo} />
-
-        <Text style={styles.etiqueta}>Cantidad</Text>
-        <TextInput style={styles.input} placeholder="Ej: 15" placeholderTextColor={colores.textoTenue} value={cantidad} onChangeText={setCantidad} keyboardType="numeric" />
-
-        <Text style={styles.etiqueta}>Descripción adicional</Text>
-        <TextInput
-          style={[styles.input, styles.textarea]}
-          placeholder="Detalles adicionales..."
-          placeholderTextColor={colores.textoTenue}
-          value={descripcion}
-          onChangeText={setDescripcion}
-          multiline
-        />
-
-        <Text style={styles.etiqueta}>N° Correctivo</Text>
-        <TextInput style={styles.input} placeholder="Si aplica" placeholderTextColor={colores.textoTenue} value={nCorrectivo} onChangeText={setNCorrectivo} />
 
         <TouchableOpacity style={styles.boton} onPress={guardar} disabled={guardando}>
           {guardando ? (
@@ -378,6 +389,22 @@ export default function NuevaScreen({ navigation, route }) {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: colores.fondo },
+  seccion: {
+    backgroundColor: colores.superficie,
+    borderWidth: 1,
+    borderColor: colores.borde,
+    borderRadius: radio.lg,
+    padding: espacio.lg,
+    marginBottom: espacio.md,
+    ...sombra,
+  },
+  seccionTitulo: {
+    color: colores.primario,
+    fontSize: 16,
+    fontWeight: tipografia.pesoNegrita,
+    marginBottom: espacio.sm,
+  },
+  ayudaSeccion: { color: colores.textoTenue, fontSize: 12, lineHeight: 17, marginBottom: espacio.sm },
   etiqueta: { fontSize: 14, fontWeight: "600", marginBottom: 6, marginTop: 14, color: colores.texto },
   subtitulo: { fontSize: 15, fontWeight: "700", marginTop: 22, marginBottom: 8, color: colores.texto },
   input: {

@@ -23,6 +23,7 @@ export default function LoginScreen() {
   const [mostrarPassword, setMostrarPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const animacionLogo = useRef(new Animated.Value(0)).current;
+  const scrollRef = useRef(null);
   const { width, height } = useWindowDimensions();
   const paddingPantalla = width < 360 ? espacio.lg : espacio.xxl;
   const logoAlto = Math.min(250, Math.max(155, width * 0.63), height < 700 ? 190 : 250);
@@ -55,7 +56,8 @@ export default function LoginScreen() {
   return (
     <KeyboardAvoidingView
       style={styles.fondo}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      keyboardVerticalOffset={0}
     >
       <View pointerEvents="none" style={styles.decoracion}>
         <View style={styles.sol} />
@@ -69,8 +71,11 @@ export default function LoginScreen() {
         </View>
       </View>
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={[styles.contenedor, { paddingHorizontal: paddingPantalla }]}
         keyboardShouldPersistTaps="handled"
+        keyboardDismissMode="on-drag"
+        automaticallyAdjustKeyboardInsets
       >
         <View style={[styles.tarjeta, { padding: paddingPantalla }]}>
           <Text style={styles.etiqueta}>OPERACIÓN Y MANTENIMIENTO</Text>
@@ -93,21 +98,11 @@ export default function LoginScreen() {
             style={styles.logoPotenza}
             resizeMode="contain"
           />
-          <Animated.View
-            style={[
-              styles.banderas,
-              {
-                transform: [
-                  { translateY: animacionLogo.interpolate({ inputRange: [0, 1], outputRange: [0, -3] }) },
-                  { scale: animacionLogo.interpolate({ inputRange: [0, 1], outputRange: [1, 1.04] }) },
-                ],
-              },
-            ]}
-          >
+          <View style={styles.banderas}>
             <Text style={styles.bandera}>🇪🇸</Text>
             <Text style={styles.separadorBandera}>·</Text>
             <Text style={styles.bandera}>🇸🇻</Text>
-          </Animated.View>
+          </View>
           <Text style={styles.titulo}>GMAO Independencia{"\n"}El Salvador</Text>
 
           <TextInput
@@ -119,6 +114,7 @@ export default function LoginScreen() {
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
+            onFocus={() => scrollRef.current?.scrollTo({ y: 210, animated: true })}
           />
           <TextInput
             style={styles.input}
@@ -127,6 +123,7 @@ export default function LoginScreen() {
             secureTextEntry={!mostrarPassword}
             value={password}
             onChangeText={setPassword}
+            onFocus={() => scrollRef.current?.scrollTo({ y: 290, animated: true })}
           />
           <TouchableOpacity
             style={styles.verPassword}
