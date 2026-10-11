@@ -37,9 +37,20 @@ function valoresIniciales() {
   );
 }
 
+function conTiempoLimite(promesa, milisegundos = 20000) {
+  return new Promise((resolve, reject) => {
+    const temporizador = setTimeout(
+      () => reject(new Error("La conexión está tardando demasiado. Revisa internet e inténtalo de nuevo.")),
+      milisegundos
+    );
+    Promise.resolve(promesa).then(resolve, reject).finally(() => clearTimeout(temporizador));
+  });
+}
+
 export default function ReporteStringsScreen({ navigation }) {
   const [valores, setValores] = useState(valoresIniciales);
   const [guardando, setGuardando] = useState(false);
+  const [mensaje, setMensaje] = useState("");
 
   function cambiar(stringId, campo, valor) {
     if (stringId !== STRINGS[0].id && campo !== "cantidad") return;
@@ -77,8 +88,9 @@ export default function ReporteStringsScreen({ navigation }) {
     }
 
     setGuardando(true);
+    setMensaje("Preparando el reporte...");
     try {
-      const { data: userData, error: errorUsuario } = await supabase.auth.getUser();
+      const { data: userData, error: errorUsuario } = await conTiempoLimite(supabase.auth.getUser());
       if (errorUsuario) throw errorUsuario;
 
       const { fecha, hora } = fechaHoraActual();
@@ -99,7 +111,8 @@ export default function ReporteStringsScreen({ navigation }) {
         creado_por: userData.user.id,
       }));
 
-      const { error } = await supabase.from("eventos").insert(registros);
+      setMensaje("Guardando los 6 strings...");
+      const { error } = await conTiempoLimite(supabase.from("eventos").insert(registros));
       if (error) throw error;
 
       Alert.alert("Reporte guardado", `Se registraron los 6 strings del ${fecha} a las ${hora}.`, [
@@ -109,6 +122,7 @@ export default function ReporteStringsScreen({ navigation }) {
       Alert.alert("No se pudo guardar el reporte", e.message);
     } finally {
       setGuardando(false);
+      setMensaje("");
     }
   }
 
@@ -156,6 +170,7 @@ export default function ReporteStringsScreen({ navigation }) {
         <TouchableOpacity style={styles.boton} onPress={guardar} disabled={guardando}>
           {guardando ? <ActivityIndicator color="#fff" /> : <Text style={styles.botonTexto}>Guardar reporte de strings</Text>}
         </TouchableOpacity>
+        {guardando ? <Text style={styles.progreso}>{mensaje}</Text> : null}
       </ScrollView>
     </KeyboardAvoidingView>
   );
@@ -180,8 +195,8 @@ const styles = StyleSheet.create({
   puntoRojo: { backgroundColor: "#dc2626" },
   puntoNegro: { backgroundColor: "#111827" },
   nombreString: { color: colores.texto, fontSize: 15, fontWeight: tipografia.pesoNegrita },
-  filaCampos: { flexDirection: "row", gap: espacio.sm },
-  campo: { flex: 1 },
+  filaCampos: { flexDirection: "row", flexWrap: "wrap", gap: espacio.sm },
+  campo: { flexGrow: 1, flexBasis: 58, minWidth: 58 },
   etiqueta: { color: colores.textoTenue, fontSize: 11, marginBottom: 4 },
   input: {
     minHeight: 42,
@@ -203,4 +218,5 @@ const styles = StyleSheet.create({
     marginTop: espacio.md,
   },
   botonTexto: { color: "#fff", fontSize: 15, fontWeight: tipografia.pesoMedia },
+  progreso: { color: colores.textoSuave, fontSize: 12, textAlign: "center", marginTop: 10 },
 });

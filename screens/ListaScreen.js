@@ -1,9 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   View,
   Text,
   SectionList,
   TouchableOpacity,
+  Animated,
   StyleSheet,
   RefreshControl,
   TextInput,
@@ -33,6 +34,7 @@ export default function ListaScreen({ navigation }) {
   const [cargando, setCargando] = useState(true);
   const [busqueda, setBusqueda] = useState("");
   const [medio, setMedio] = useState("Todos");
+  const escalaBoton = useRef(new Animated.Value(1)).current;
 
   async function cargarEventos() {
     setCargando(true);
@@ -195,19 +197,30 @@ export default function ListaScreen({ navigation }) {
         )}
       />
 
-      <TouchableOpacity
-        style={[styles.botonFlotanteSecundario, sombra]}
-        onPress={() => navigation.navigate("Exportar")}
-      >
-        <Text style={styles.botonFlotanteSecundarioTexto}>Excel</Text>
-      </TouchableOpacity>
-
-      <TouchableOpacity
+      <Animated.View style={{ transform: [{ scale: escalaBoton }] }}>
+        <TouchableOpacity
         style={[styles.botonFlotante, sombra]}
         onPress={() => navigation.navigate("Nueva")}
+        onPressIn={() =>
+          Animated.spring(escalaBoton, {
+            toValue: 0.88,
+            useNativeDriver: true,
+            speed: 30,
+            bounciness: 4,
+          }).start()
+        }
+        onPressOut={() =>
+          Animated.spring(escalaBoton, {
+            toValue: 1,
+            useNativeDriver: true,
+            speed: 18,
+            bounciness: 12,
+          }).start()
+        }
       >
         <Text style={styles.botonFlotanteTexto}>+</Text>
-      </TouchableOpacity>
+        </TouchableOpacity>
+      </Animated.View>
     </View>
   );
 }
@@ -270,18 +283,6 @@ const styles = StyleSheet.create({
   filaInferior: { flexDirection: "row", flexWrap: "wrap", marginTop: 8 },
   meta: { fontSize: tipografia.chica, color: colores.textoTenue, marginRight: espacio.xs },
   contadorFotos: { fontSize: tipografia.chica, color: colores.primario, marginTop: 8, fontWeight: tipografia.pesoMedia },
-  botonFlotanteSecundario: {
-    position: "absolute",
-    left: 20,
-    bottom: 112,
-    backgroundColor: colores.superficie,
-    borderWidth: 1,
-    borderColor: colores.primario,
-    borderRadius: radio.redondo,
-    paddingVertical: 12,
-    paddingHorizontal: 18,
-  },
-  botonFlotanteSecundarioTexto: { color: colores.primario, fontWeight: tipografia.pesoNegrita },
   botonFlotante: {
     position: "absolute",
     right: 20,

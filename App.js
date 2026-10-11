@@ -18,7 +18,6 @@ import LoginScreen from "./screens/LoginScreen";
 import ListaScreen from "./screens/ListaScreen";
 import NuevaScreen from "./screens/NuevaScreen";
 import DetalleScreen from "./screens/DetalleScreen";
-import ExportarScreen from "./screens/ExportarScreen";
 import TareasScreen from "./screens/TareasScreen";
 import TareaDetalleScreen from "./screens/TareaDetalleScreen";
 import ReporteStringsScreen from "./screens/ReporteStringsScreen";
@@ -129,11 +128,6 @@ function StackBitacoras() {
         name="ReporteStrings"
         component={ReporteStringsScreen}
         options={{ title: "Cambio cable en string" }}
-      />
-      <Stack.Screen
-        name="Exportar"
-        component={ExportarScreen}
-        options={{ title: "Exportar Excel" }}
       />
       <Stack.Screen name="Detalle" component={DetalleScreen} options={{ title: "Detalle" }} />
     </Stack.Navigator>
