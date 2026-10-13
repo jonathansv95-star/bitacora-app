@@ -31,7 +31,7 @@ export default function Login() {
       </video>
       <form className="login-tarjeta" onSubmit={entrar}>
         <div className="login-marca">
-          <img src="/logo.png" alt="Ortiz Energía" className="login-logo" />
+          <img src="/logo-ortiz.png" alt="Grupo Ortiz" className="login-logo" />
           <img src="/logo-potenza.png" alt="Potenza" className="login-potenza" />
         </div>
         <div className="login-banderas" aria-label="España y El Salvador">
