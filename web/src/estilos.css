@@ -500,6 +500,9 @@ button {
 /* Identidad compartida con el inicio de sesión móvil */
 .login-fondo {
   background: #071426;
+  justify-content: flex-end;
+  padding-left: 28px;
+  padding-right: clamp(28px, 8vw, 140px);
 }
 
 .login-fondo::before {
@@ -523,6 +526,7 @@ button {
   border-radius: 28px;
   padding: 42px 48px 36px;
   background: #fff;
+  margin-left: auto;
 }
 
 .login-tarjeta::before {
@@ -601,6 +605,12 @@ button {
 }
 
 @media (max-width: 720px) {
+  .login-fondo {
+    justify-content: center;
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+
   .login-tarjeta {
     max-width: 520px;
     min-height: 0;
