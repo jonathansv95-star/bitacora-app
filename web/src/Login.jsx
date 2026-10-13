@@ -34,7 +34,7 @@ export default function Login() {
         <div className="login-banderas" aria-label="España y El Salvador">
           <img
             className="banderas-imagen"
-            src="/banderas-espana-el-salvador.webp"
+            src="/banderas-espana-el-salvador.jpg"
             alt="Banderas de España y El Salvador"
           />
         </div>
