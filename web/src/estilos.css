@@ -543,13 +543,41 @@ button {
   align-items: center;
   justify-content: center;
   gap: 10px;
-  font-size: 30px;
   margin: 2px 0 20px;
 }
 
-.login-banderas span:nth-child(2) {
+.bandera {
+  display: inline-block;
+  width: 54px;
+  height: 34px;
+  border: 1px solid rgba(15, 23, 42, 0.16);
+  border-radius: 4px;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.bandera-espana {
+  background: linear-gradient(to bottom, #aa151b 0 25%, #f1bf00 25% 75%, #aa151b 75% 100%);
+}
+
+.bandera-salvador {
+  position: relative;
+  background: linear-gradient(to bottom, #0f47af 0 33%, #fff 33% 67%, #0f47af 67% 100%);
+}
+
+.bandera-salvador::after {
+  content: "★";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  color: #0f47af;
+  font-size: 12px;
+}
+
+.bandera-separador {
   color: var(--texto-tenue);
   font-size: 20px;
+  margin: 0 10px;
 }
 
 .login-bienvenida h1 {

@@ -32,7 +32,9 @@ export default function Login() {
           <img src="/logo-potenza.png" alt="Potenza" className="login-potenza" />
         </div>
         <div className="login-banderas" aria-label="España y El Salvador">
-          <span>🇪🇸</span><span>·</span><span>🇸🇻</span>
+          <span className="bandera bandera-espana" title="España" />
+          <span className="bandera-separador">·</span>
+          <span className="bandera bandera-salvador" title="El Salvador" />
         </div>
         <div className="login-bienvenida">
           <h1>GMAO Independencia</h1>
