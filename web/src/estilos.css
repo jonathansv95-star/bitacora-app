@@ -497,6 +497,96 @@ button {
   margin: 8px 0 0;
 }
 
+/* Identidad compartida con el inicio de sesión móvil */
+.login-fondo {
+  background: #071426;
+}
+
+.login-tarjeta {
+  max-width: 480px;
+  min-height: 0;
+  border-radius: 28px;
+  padding: 42px 48px 36px;
+  background: #fff;
+}
+
+.login-tarjeta::before {
+  left: 0;
+  right: 0;
+  top: 0;
+  width: auto;
+  height: 5px;
+  background: var(--sol-grad);
+}
+
+.login-marca {
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 4px;
+}
+
+.login-logo {
+  width: 100%;
+  height: 170px;
+  margin-bottom: 0;
+}
+
+.login-potenza {
+  width: 210px;
+  height: 64px;
+  object-fit: contain;
+  margin-top: -12px;
+}
+
+.login-banderas {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 30px;
+  margin: 2px 0 20px;
+}
+
+.login-banderas span:nth-child(2) {
+  color: var(--texto-tenue);
+  font-size: 20px;
+}
+
+.login-bienvenida h1 {
+  margin: 0;
+  text-align: center;
+  color: var(--texto);
+  font-size: 26px;
+  letter-spacing: -0.04em;
+}
+
+.login-bienvenida p {
+  margin: 6px 0 2px;
+  text-align: center;
+  color: var(--texto-suave);
+  font-size: 14px;
+}
+
+.login-privacidad {
+  margin: 0;
+  color: var(--texto-tenue);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .login-tarjeta {
+    max-width: 520px;
+    min-height: 0;
+    padding: 36px 24px 30px;
+    border-radius: 24px;
+  }
+
+  .login-logo { height: 190px; }
+  .login-potenza { width: 190px; height: 58px; }
+}
+
 /* ---------- Cabecera y pestañas ---------- */
 .app {
   min-height: 100vh;

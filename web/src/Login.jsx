@@ -26,31 +26,17 @@ export default function Login() {
 
   return (
     <div className="login-fondo">
-      <div className="login-escena" aria-hidden="true">
-        <div className="login-escena-contenido">
-          <span className="login-etiqueta">OPERACION Y MANTENIMIENTO</span>
-          <span className="login-sol">☀️</span>
-          <h1>La Independencia</h1>
-          <p>Control operativo de tu planta fotovoltaica.</p>
-          <div className="login-estadistica">
-            <strong>Bitacora digital</strong>
-            <span>Todo el seguimiento en un solo lugar</span>
-          </div>
-        </div>
-        <div className="login-lineas" />
-      </div>
-
       <form className="login-tarjeta" onSubmit={entrar}>
         <div className="login-marca">
           <img src="/logo.png" alt="Ortiz Energía" className="login-logo" />
-          <div>
-            <h2>Bitácora de mantenimiento</h2>
-            <p>Planta Fotovoltaica La Independencia</p>
-          </div>
+          <img src="/logo-potenza.png" alt="Potenza" className="login-potenza" />
+        </div>
+        <div className="login-banderas" aria-label="España y El Salvador">
+          <span>🇪🇸</span><span>·</span><span>🇸🇻</span>
         </div>
         <div className="login-bienvenida">
-          <h1>Bienvenido de nuevo</h1>
-          <p>Ingresa tus datos para continuar</p>
+          <h1>GMAO Independencia</h1>
+          <p>El Salvador · Acceso operativo</p>
         </div>
         <label className="login-campo">
           <span>Correo electrónico</span>
@@ -91,7 +77,8 @@ export default function Login() {
           {!cargando && <span aria-hidden="true">→</span>}
         </button>
         {mensaje && <p className="aviso">{mensaje}</p>}
-        <p className="login-pie">Acceso restringido al equipo de operación y mantenimiento.</p>
+        <p className="login-pie">Aviso de privacidad</p>
+        <p className="login-privacidad">Uso exclusivo de personal autorizado. La información registrada es privada.</p>
       </form>
     </div>
   );
