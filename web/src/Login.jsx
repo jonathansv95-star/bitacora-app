@@ -26,6 +26,9 @@ export default function Login() {
 
   return (
     <div className="login-fondo">
+      <video className="login-video" autoPlay muted loop playsInline aria-hidden="true">
+        <source src="/planta-drone.mp4" type="video/mp4" />
+      </video>
       <form className="login-tarjeta" onSubmit={entrar}>
         <div className="login-marca">
           <img src="/logo.png" alt="Ortiz Energía" className="login-logo" />
