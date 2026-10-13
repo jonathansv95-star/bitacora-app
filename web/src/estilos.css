@@ -525,7 +525,10 @@ button {
   min-height: 0;
   border-radius: 28px;
   padding: 42px 48px 36px;
-  background: #fff;
+  background: rgba(7, 20, 38, 0.82);
+  border-color: rgba(148, 163, 184, 0.28);
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.42);
+  backdrop-filter: blur(18px);
   margin-left: auto;
 }
 
@@ -555,6 +558,9 @@ button {
   height: 64px;
   object-fit: contain;
   margin-top: -12px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 6px 12px;
 }
 
 .login-banderas {
@@ -584,7 +590,7 @@ button {
 .login-bienvenida h1 {
   margin: 0;
   text-align: center;
-  color: var(--texto);
+  color: #fff;
   font-size: 26px;
   letter-spacing: -0.04em;
 }
@@ -592,17 +598,34 @@ button {
 .login-bienvenida p {
   margin: 6px 0 2px;
   text-align: center;
-  color: var(--texto-suave);
+  color: #bfdbfe;
   font-size: 14px;
 }
 
 .login-privacidad {
   margin: 0;
-  color: var(--texto-tenue);
+  color: #94a3b8;
   font-size: 11px;
   line-height: 1.5;
   text-align: center;
 }
+
+.login-campo > span { color: #cbd5e1; }
+
+.login-input-wrap {
+  border-color: rgba(148, 163, 184, 0.45);
+  background: rgba(15, 31, 55, 0.82);
+}
+
+.login-input-icono { color: #93c5fd; }
+
+.login-tarjeta input {
+  color: #fff;
+}
+
+.login-tarjeta input::placeholder { color: #94a3b8; }
+
+.login-pie { color: #94a3b8; }
 
 @media (max-width: 720px) {
   .login-fondo {
