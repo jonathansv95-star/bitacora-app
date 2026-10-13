@@ -568,8 +568,8 @@ button {
   height: auto;
   object-fit: cover;
   border: 1px solid rgba(15, 23, 42, 0.16);
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+  border-radius: 28px 12px 28px 12px;
+  box-shadow: 0 6px 16px rgba(15, 23, 42, 0.2);
 }
 
 .bandera-separador {
